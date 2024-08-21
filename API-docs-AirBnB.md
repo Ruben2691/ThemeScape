@@ -866,7 +866,7 @@ Update and return an existing review.
 * Require proper authorization: Review must belong to the current user
 * Request
   * Method: PUT
-  * Route path: /:user/review/:id/edit
+  * Route path: /review/:id/edit
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -968,7 +968,7 @@ Return all the bookings that the current user has made.
 * Require Authentication: true
 * Request
   * Method: GET
-  * Route path: /:user/bookings
+  * Route path: /user/bookings
   * Body: none
 
 * Successful Response
@@ -1013,7 +1013,7 @@ Return all the bookings for a spot specified by id.
 * Require Authentication: true
 * Request
   * Method: GET
-  * Route path: /:user/spot/:id/bookings
+  * Route path: /spot/:id/bookings
   * Body: none
 
 * Successful Response: If you ARE NOT the owner of the spot.
@@ -1081,7 +1081,7 @@ Create and return a new booking from a spot specified by id.
 * Require proper authorization: Spot must NOT belong to the current user
 * Request
   * Method: POST
-  * Route path: /booking/:user/spot/:id/new
+  * Route path: /booking/spot/:id/new
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -1162,8 +1162,8 @@ Update and return an existing booking.
 * Require Authentication: true
 * Require proper authorization: Booking must belong to the current user
 * Request
-  * Method:?
-  * Route path:?
+  * Method: PATCH
+  * Route path: /bookings/:id
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -1257,8 +1257,8 @@ Delete an existing booking.
 * Require proper authorization: Booking must belong to the current user or the
   Spot must belong to the current user
 * Request
-  * Method: ?
-  * Route path: ?
+  * Method: DELETE
+  * Route path: /booking/:id
   * Body: none
 
 * Successful Response
@@ -1306,8 +1306,8 @@ Delete an existing image for a Spot.
 * Require Authentication: true
 * Require proper authorization: Spot must belong to the current user
 * Request
-  * Method: ?
-  * Route path: ?
+  * Method: DELETE
+  * Route path: /spot/image/:id
   * Body: none
 
 * Successful Response
@@ -1341,8 +1341,8 @@ Delete an existing image for a Review.
 * Require Authentication: true
 * Require proper authorization: Review must belong to the current user
 * Request
-  * Method: ?
-  * Route path: ?
+  * Method: DELETE
+  * Route path: /reviews/:reviewIdImages/:imageId
   * Body: none
 
 * Successful Response
@@ -1375,8 +1375,8 @@ Return spots filtered by query parameters.
 
 * Require Authentication: false
 * Request
-  * Method: ?
-  * Route path: ?
+  * Method: GET
+  * Route path: /spots
   * Query Parameters
     * page: integer, minimum: 1, default: 1
     * size: integer, minimum: 1, maximum: 20, default: 20
