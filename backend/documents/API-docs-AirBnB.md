@@ -2,7 +2,7 @@
 
 ## Database Schema Design
 
-`<insert database schema design here>`
+![database schema](<../../Notes/Screenshot 2024-08-21 at 10.46.04 PM.png>)
 
 ## API Documentation
 

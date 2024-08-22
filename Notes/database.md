@@ -1,3 +1,7 @@
+https://lucid.app/lucidchart/d721ae59-75d4-40b9-a65b-009c39739353/edit?viewport_loc=-718%2C-674%2C2469%2C1348%2CHWEp-vi-RSFO&invitationId=inv_c84dde8f-1a44-4fb2-aaff-5cf82d917b2c
+
+
+
 Table Users {
   id integer [primary key] AUTOINCREMENT
   firstName string
@@ -47,4 +51,4 @@ Table Images {
 Ref: Reviewseviews > Users, Spots // many-to-many
 Ref: Users > Spots //one to many
 Ref: Spots < Users//many to one
-Ref: Imgaes > Reviews // one to many 
+Ref: Imgaes > Reviews // one to many
