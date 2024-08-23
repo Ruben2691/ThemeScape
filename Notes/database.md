@@ -13,7 +13,7 @@ Table Users {
 Table Spots{
 id integer  [primary key]
 ownerId integer
-adress string
+address string
 city string
 stat string
 country string
