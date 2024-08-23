@@ -1,4 +1,4 @@
-# `<name of application here>`
+# `ThemeScape`
 
 ## Database Schema Design
 
