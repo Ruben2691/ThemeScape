@@ -50,7 +50,7 @@ Returns the information about the current user that is logged in.
 * Require Authentication: false
 * Request
   * Method: GET
-  * Route path: /user
+  * Route path: /session
   * Body: none
 
 * Successful Response when there is a logged in user
@@ -91,7 +91,7 @@ information.
 * Require Authentication: false
 * Request
   * Method: POST
-  * Route path: /user/login
+  * Route path: /session/login
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -157,7 +157,7 @@ user's information.
 * Require Authentication: false
 * Request
   * Method: POST
-  * Route path: /signup
+  * Route path: /users
   * Headers:
     * Content-Type: application/json
   * Body:
@@ -233,7 +233,7 @@ Returns all the spots.
 * Require Authentication: false
 * Request
   * Method: GET
-  * Route path: /spots
+  * Route path: /spots/current
   * Body: none
 
 * Successful Response
@@ -273,7 +273,7 @@ Returns all the spots owned (created) by the current user.
 * Require Authentication: true
 * Request
   * Method: GET
-  * Route path: /:user/spots
+  * Route path: /users/current
   * Body: none
 
 * Successful Response
@@ -313,7 +313,7 @@ Returns the details of a spot specified by its id.
 * Require Authentication: false
 * Request
   * Method: gET
-  * Route path: /spot/:id
+  * Route path: /spots/current/:id
   * Body: none
 
 * Successful Response
