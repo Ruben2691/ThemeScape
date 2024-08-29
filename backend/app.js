@@ -6,6 +6,7 @@ const cors = require("cors");
 const csurf = require("csurf");
 const helmet = require("helmet");
 const cookieParser = require("cookie-parser");
+const { ValidationError } = require("sequelize");
 
 // this lets us determine what environment we're in so that we can do different process in that environment
 const { environment } = require("./config");
@@ -55,7 +56,51 @@ app.use(
 
 app.use(routes); // Connect all the routes
 
+// the underscore before req and res is there to signify that we don't use them in the middleware
+// Catch unhandled requests and forward to error handler.
+app.use((_req, _res, next) => {
+  // creates an error instance
+  const err = new Error("The requested resource couldn't be found.");
+  // gives the error a title
+  err.title = "Resource Not Found";
+  // specifies the errors that occurred
+  err.errors = { message: "The requested resource couldn't be found." };
+  // the status message that will be passed along with the error
+  err.status = 404;
+  next(err);
+});
+
+
+
+// Process sequelize errors
+app.use((err, _req, _res, next) => {
+  // check if error is a Sequelize error:
+  if (err instanceof ValidationError) {
+    let errors = {};
+    for (let error of err.errors) {
+      errors[error.path] = error.message;
+    }
+    err.title = 'Validation error';
+    err.errors = errors;
+  }
+  next(err);
+});
+
+
 // backend/app.js
+
+// Error formatter
+app.use((err, _req, res, _next) => {
+  res.status(err.status || 500);
+  console.error(err);
+  res.json({
+    title: err.title || 'Server Error',
+    message: err.message,
+    errors: err.errors,
+    stack: isProduction ? null : err.stack
+  });
+});
+
 
 
 module.exports = app;
