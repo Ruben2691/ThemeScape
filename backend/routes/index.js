@@ -1,7 +1,7 @@
 // backend/routes/index.js
 const express = require("express");
 const router = express.Router();
-
+const apiRouter = require("./api");
 
 // backend/routes/index.js
 // ...
@@ -14,8 +14,7 @@ router.get("/api/csrf/restore", (req, res) => {
   });
 });
 
-
-
+router.use("/api", apiRouter);
 
 // this should be at the bottom
 module.exports = router;
