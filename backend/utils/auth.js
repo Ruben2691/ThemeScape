@@ -69,7 +69,13 @@ const requireAuth = function (req, _res, next) {
     err.status = 401;
     return next(err);
   }
+  const authorizationMiddleware = (requiredRole) => (req, res, next) => {
+    if (!req.user || !req.user.role || req.user.role !== requiredRole) {
+      return res.status(403).json({ message: "Forbidden" });
+    }
+    next();
+  };
 
 
 
-module.exports = { setTokenCookie, restoreUser, requireAuth };
+module.exports = { setTokenCookie, restoreUser, requireAuth, authorizationMiddleware};
