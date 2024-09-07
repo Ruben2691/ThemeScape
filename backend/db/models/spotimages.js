@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      SpotImages.belongsTo(Spot, { foreignKey: "spotId" });
+      SpotImages.belongsTo(models.Spots, { foreignKey: "spotId" });
     }
   }
   SpotImages.init({
