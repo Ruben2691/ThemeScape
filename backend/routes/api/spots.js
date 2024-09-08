@@ -557,6 +557,66 @@ router.get('/spots/:spotId/reviews', async (req, res) => {
   }
 });
 
+// PUT /reviews/:reviewId - Update a review
+router.put('/reviews/:reviewId', requireAuth, async (req, res) => {
+  const { reviewId } = req.params;
+  const { review, stars } = req.body;
+  const { user } = req;
 
+  try {
+    // Fetch the existing review by ID
+    const existingReview = await Review.findByPk(reviewId);
+
+    // If review doesn't exist, return a 404 error
+    if (!existingReview) {
+      return res.status(404).json({
+        message: "Review couldn't be found",
+        statusCode: 404
+      });
+    }
+
+    // Check if authenticated user is the owner of the review
+    if (existingReview.userId !== user.id) {
+      return res.status(403).json({
+        message: "Forbidden - You are not authorized to update this review",
+        statusCode: 403
+      });
+    }
+
+    // Validate the `review` and `stars` fields
+    if (!review || typeof stars !== 'number' || stars < 1 || stars > 5) {
+      return res.status(400).json({
+        message: "Validation error",
+        statusCode: 400,
+        errors: {
+          review: review ? null : "Review text is required",
+          stars: stars < 1 || stars > 5 ? "Stars must be an integer from 1 to 5" : null
+        }
+      });
+    }
+
+    // Update the review in the database
+    existingReview.review = review;
+    existingReview.stars = stars;
+
+    await existingReview.save();
+
+    return res.status(200).json({
+      id: existingReview.id,
+      userId: existingReview.userId,
+      spotId: existingReview.spotId,
+      review: existingReview.review,
+      stars: existingReview.stars,
+      createdAt: existingReview.createdAt,
+      updatedAt: existingReview.updatedAt
+    });
+  } catch (err) {
+    console.error("Error updating review:", err);
+    return res.status(500).json({
+      message: "Internal server error",
+      statusCode: 500
+    });
+  }
+});
 
 module.exports = router;
