@@ -13,38 +13,113 @@ const authenticationMiddleware = (req, res, next) => {
 };
 
 
-router.get('/', async (req, res) => {
-  try {
-    const spots = await Spots.findAll();
-    res.json({ Spots: spots });
-  } catch (err) {
-    res.status(500).json({ message: "Server error", errors: err.errors });
-  }
-});
+// //details of a spot from an id
+// router.get('/spots/:spotId', async (req, res) => {
+//   const { spotId } = req.params;
+
+//   try {
+//     const spot = await Spots.findByPk(spotId, {
+//       include: [
+//         { model: SpotImage, attributes: ['id', 'url', 'preview'] },
+//         { model: User, as: 'Owner', attributes: ['id', 'firstName', 'lastName'] }
+//       ]
+//     });
+
+//     if (!spot) {
+//       return res.status(404).json({ message: "Spot couldn't be found" });
+//     }
+
+//     return res.status(200).json(spot);
+//   } catch (error) {
+//     return res.status(500).json({ message: 'Internal Server Error' });
+//   }
+// });
+
+// // Get all spots owned by the current user
+// router.get('/spots/current', authenticationMiddleware, async (req, res) => {
+//   try {
+//     const spots = await Spots.findAll({
+//       where: { ownerId: req.user.id }
+//     });
+//     return res.status(200).json({ Spots: spots });
+//   } catch (error) {
+//     return res.status(500).json({ message: 'Internal Server Error' });
+//   }
+// });
 
 
-router.post('/', authenticationMiddleware, async (req, res) => {
-    const { address, city, state, country, lat, lng, name, description, price } = req.body;
+// //add image
+// router.post('/:spotId/images', authenticationMiddleware, async (req, res) => {
+//   const { spotId } = req.params;
+//   const { url, preview } = req.body;
+//   const userId = req.user.id;
 
-    try {
-      const newSpot = await Spots.create({
-        ownerId: req.user.id,
-        address,
-        city,
-        state,
-        country,
-        lat,
-        lng,
-        name,
-        description,
-        price
-      });
+//   try {
+//     // Find the spot
+//     const spot = await Spots.findByPk(spotId);
 
-      res.status(201).json(newSpot);
-    } catch (err) {
-      res.status(400).json({ message: "Bad Request", errors: err.errors });
-    }
-  });
+//     if (!spot) {
+//       return res.status(404).json({ message: "Spot couldn't be found" });
+//     }
+
+//     // Check if the current user is the owner of the spot
+//     if (spot.ownerId !== userId) {
+//       return res.status(403).json({ message: 'Forbidden' });
+//     }
+
+//     // Create and add the image
+//     const newImage = await SpotImages.create({
+//       spotId,
+//       url,
+//       preview
+//     });
+
+//     return res.status(201).json({
+//       id: newImage.id,
+//       url: newImage.url,
+//       preview: newImage.preview
+//     });
+//   } catch (error) {
+//     console.error('Error adding image to spot:', error);
+//     return res.status(500).json({ message: 'Internal Server Error' });
+//   }
+
+// })
+
+// //GET Spots
+// router.get('/', async (req, res) => {
+//   try {
+//     const spots = await Spots.findAll();
+//     res.json({ Spots: spots });
+//   } catch (err) {
+//     console.error('Error retrieving spots:', err);
+//     res.status(500).json({ message: "Server error", errors: err.errors });
+//   }
+// });
+
+// //Create a spot
+// router.post('/', authenticationMiddleware, async (req, res) => {
+//     const { address, city, state, country, lat, lng, name, description, price } = req.body;
+
+//     try {
+//       const newSpot = await Spots.create({
+//         ownerId: req.user.id,
+//         address,
+//         city,
+//         state,
+//         country,
+//         lat,
+//         lng,
+//         name,
+//         description,
+//         price
+//       });
+
+//       res.status(201).json(newSpot);
+//     } catch (err) {
+//       res.status(400).json({ message: "Bad Request", errors: err.errors });
+//     }
+//   });
 
   // Get Spot by ID and details (Owner, SpotImages, Reviews)
 router.get('/spots/:id', async (req, res) => {
