@@ -13,7 +13,7 @@ const authenticationMiddleware = (req, res, next) => {
 };
 
 
-// //details of a spot from an id
+// Kadija's code //details of a spot from an id
 // router.get('/spots/:spotId', async (req, res) => {
 //   const { spotId } = req.params;
 
