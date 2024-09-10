@@ -2,8 +2,8 @@ const config = require('./index');
 
 module.exports = {
   development: {
-    storage: config.dbFile,
     dialect: "sqlite",
+    storage: config.dbFile,
     seederStorage: "sequelize",
     logQueryParameters: true,
     typeValidation: true
