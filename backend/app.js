@@ -1,26 +1,23 @@
 // all express imports
-const express = require("express");
-require("express-async-errors");
-const morgan = require("morgan");
-const cors = require("cors");
-const csurf = require("csurf");
-const helmet = require("helmet");
-const cookieParser = require("cookie-parser");
-const { ValidationError } = require("sequelize");
+const express = require('express');
+require('express-async-errors');
+const morgan = require('morgan');
+const cors = require('cors');
+const csurf = require('csurf');
+const helmet = require('helmet');
+const cookieParser = require('cookie-parser');
+const { ValidationError } = require('sequelize');
 
 // this lets us determine what environment we're in so that we can do different process in that environment
 const { environment } = require("./config");
 const isProduction = environment === "production";
-
-// used to connect to routes
-const routes = require('./routes');
-
 // this is to set up our express app
 const app = express();
+const routes = require('./routes');
 
-// this is to log info about req and res
+
+// this is to log info about req and res -- middleware
 app.use(morgan("dev"));
-
 /**Add the cookie-parser middleware for parsing cookies and the express.json middleware for parsing JSON bodies of requests with Content-Type of "application/json". */
 app.use(cookieParser());
 app.use(express.json());
@@ -51,9 +48,7 @@ app.use(
 );
 
 
-
-
-
+//ENDPOINTS
 app.use(routes); // Connect all the routes
 
 // the underscore before req and res is there to signify that we don't use them in the middleware
@@ -86,8 +81,6 @@ app.use((err, _req, _res, next) => {
   next(err);
 });
 
-
-// backend/app.js
 
 // Error formatter
 app.use((err, _req, res, _next) => {
