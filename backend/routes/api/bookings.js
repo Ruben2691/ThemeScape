@@ -1,5 +1,5 @@
 const express = require("express");
-const { Booking, Spot } = require("../../models");
+const { Bookings, Spots } = require("../../db/models");
 const router = express.Router();
 const { requireAuth } = require("../../utils/auth");
 const { handleValidationErrors } = require("../../utils/validation");
@@ -39,7 +39,7 @@ router.put("/:bookingId", requireAuth, validateBooking, async (req, res) => {
 
   try {
     // Find the booking by ID
-    const booking = await Booking.findByPk(bookingId);
+    const booking = await Bookings.findByPk(bookingId);
 
     // If booking is not found, return 404
     if (!booking) {
@@ -72,7 +72,7 @@ router.put("/:bookingId", requireAuth, validateBooking, async (req, res) => {
 
         try {
           // Find the booking by ID
-          const booking = await Booking.findByPk(bookingId);
+          const booking = await Bookings.findByPk(bookingId);
 
           // If booking is not found, return 404
           if (!booking) {
@@ -91,7 +91,7 @@ router.put("/:bookingId", requireAuth, validateBooking, async (req, res) => {
           }
 
           // Get all bookings for the same spot
-          const existingBookings = await Booking.findAll({
+          const existingBookings = await Bookings.findAll({
             where: { spotId: booking.spotId },
           });
 
@@ -199,7 +199,7 @@ router.delete("/bookings/:bookingId", requireAuth, async (req, res) => {
 
   try {
     // Find the booking by ID
-    const booking = await Booking.findByPk(bookingId, {
+    const booking = await Bookings.findByPk(bookingId, {
       include: {
         model: Spot,
         attributes: ["ownerId"],
@@ -222,7 +222,7 @@ router.delete("/bookings/:bookingId", requireAuth, async (req, res) => {
     // Check if the booking belongs to the current user or if the spot owner is the current user
     if (
       booking.userId !== currentUserId &&
-      booking.Spot.ownerId !== currentUserId
+      booking.Spots.ownerId !== currentUserId
     ) {
       return res
         .status(403)
@@ -247,7 +247,7 @@ router.get("/spots/:spotId/bookings", requireAuth, async (req, res) => {
 
   try {
     // Find the spot first to check ownership
-    const spot = await Spot.findByPk(spotId);
+    const spot = await Spots.findByPk(spotId);
 
     // If the spot is not found, return a 404 error
     if (!spot) {
@@ -260,7 +260,7 @@ router.get("/spots/:spotId/bookings", requireAuth, async (req, res) => {
     // Set up the include for the Booking model
     let include = [
       {
-        model: Booking,
+        model: Bookings,
         attributes: ["spotId","startDate", "endDate"],
       },
     ];
@@ -269,9 +269,9 @@ router.get("/spots/:spotId/bookings", requireAuth, async (req, res) => {
     if (isOwner) {
       include = [
         {
-          model: Booking,
+          model: Bookings,
           include: [
-            { model: User, attributes: ["id", "firstName", "lastName"] },
+            { model: Users, attributes: ["id", "firstName", "lastName"] },
           ],
           attributes: [
             "id",
@@ -287,7 +287,7 @@ router.get("/spots/:spotId/bookings", requireAuth, async (req, res) => {
     }
 
     // Now, find the spot again with the proper include (based on ownership)
-    const spotWithBookings = await Spot.findByPk(spotId, { include });
+    const spotWithBookings = await Spots.findByPk(spotId, { include });
 
     // Map through the bookings and customize the response based on ownership
     const bookings = spotWithBookings.Bookings.map((booking) => {
@@ -295,9 +295,9 @@ router.get("/spots/:spotId/bookings", requireAuth, async (req, res) => {
         // Detailed booking info with user data for the owner
         return {
           User: {
-            id: booking.User.id,
-            firstName: booking.User.firstName,
-            lastName: booking.User.lastName,
+            id: booking.Users.id,
+            firstName: booking.Users.firstName,
+            lastName: booking.Users.lastName,
           },
           id: booking.id,
           spotId: booking.spotId,
@@ -324,3 +324,36 @@ router.get("/spots/:spotId/bookings", requireAuth, async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 });
+
+// gat all of the current user's bookings
+router.get("/current", requireAuth, async (req, res) => {
+  const currentUserId = req.user.id;
+  try {
+    const bookings = await Bookings.findAll({
+      where: { userId: currentUserId },
+      include: {
+        model: Spot, // Include the Spot model to get spot details
+        attributes: [
+          "id",
+          "ownerId",
+          "address",
+          "city",
+          "state",
+          "country",
+          "lat",
+          "lng",
+          "name",
+          "price",
+          "previewImage",
+        ],
+      },
+    });
+    return res.status(200).json({ Bookings: bookings });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+})
+
+
+module.exports = router;

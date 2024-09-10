@@ -57,9 +57,7 @@ router.post('/', validateLogin, async (req, res, next) => {
   );
 
   // Log out
-router.delete(
-    '/',
-    (_req, res) => {
+router.delete('/', (_req, res) => {
       res.clearCookie('token');
       return res.json({ message: 'success' });
     }
@@ -67,10 +65,8 @@ router.delete(
 
 
 // Restore session user
-router.get(
-    '/',
-    (req, res) => {
-      const { user } = req;
+router.get('/',(req, res) => {
+    const { user } = req;
       if (user) {
         const safeUser = {
           id: user.id,
