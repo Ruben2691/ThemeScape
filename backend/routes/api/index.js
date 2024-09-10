@@ -21,11 +21,6 @@ const { restoreUser } = require("../../utils/auth.js");
   router.use('/reviewsImages' , reviewsImagesRouter);
   router.use('/bookings' , bookingsRouter);
 
-  router.post('/test', function (req, res) {
-    res.json({ requestBody: req.body });
-  });
-
-
 router.post('/test', (req, res) => {
   res.json({ requestBody: req.body });
 });
