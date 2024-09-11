@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { Spots, SpotImages, Users, Reviews, ReviewImages } = require("../../db/models");
+const { Spots, SpotImages, Users, Reviews} = require("../../db/models");
 const { requireAuth } = require("../../utils/auth");
 const { check, validationResult } = require('express-validator');
 

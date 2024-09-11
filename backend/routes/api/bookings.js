@@ -61,10 +61,7 @@ router.put("/:bookingId", requireAuth, validateBooking, async (req, res) => {
     }
 
     // Get all bookings for the same spot
-    router.put(
-      "/:bookingId",
-      requireAuth,
-      validateBooking,
+    router.put( "/:bookingId", requireAuth, validateBooking,
       async (req, res) => {
         const bookingId = req.params.bookingId;
         const { startDate, endDate } = req.body;
@@ -134,10 +131,7 @@ router.put("/:bookingId", requireAuth, validateBooking, async (req, res) => {
             }
 
             // Conflict Scenario 3: Existing booking fully overlaps with the new booking
-            if (
-              existingStartDate <= new Date(startDate) &&
-              existingEndDate >= new Date(endDate)
-            ) {
+            if (existingStartDate <= new Date(startDate) && existingEndDate >= new Date(endDate)){
               return res.status(403).json({
                 message:
                   "Sorry, this spot is already booked for the specified dates",
@@ -201,7 +195,7 @@ router.delete("/bookings/:bookingId", requireAuth, async (req, res) => {
     // Find the booking by ID
     const booking = await Bookings.findByPk(bookingId, {
       include: {
-        model: Spot,
+        model: Spots,
         attributes: ["ownerId"],
       },
     });
