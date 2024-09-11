@@ -262,7 +262,7 @@ router.get( '/spots',
       }
 
       // GET /api/spots - Return spots filtered by query parameters
-  router.get('/', async (req, res) => {
+  router.get('/spots', async (req, res) => {
     try {
         let { page = 1, size = 20, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
 
