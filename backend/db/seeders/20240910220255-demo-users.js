@@ -1,8 +1,14 @@
 'use strict';
 
-/** @type {import('sequelize-cli').Migration} */
 const { Users } = require('../models');
 const bcrypt = require('bcryptjs');
+
+let options = {};
+if (process.env.NODE_ENV === 'production') {
+  options.schema = process.env.SCHEMA;  // define your schema in options object
+}
+
+/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface, Sequelize) {
    const userSeed = [
@@ -32,6 +38,7 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
+    options.tableName = 'Users';
     await queryInterface.bulkDelete('Users', null, {});
   }
 };
