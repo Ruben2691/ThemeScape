@@ -71,7 +71,13 @@ module.exports = {
         price: 285,
       },
     ];
-    await Spots.bulkCreate(spotSeed);
+    try {
+      await Spots.bulkCreate(spotSeed , { validate: true });
+
+    } catch (error) {
+      console.error(error);
+    }
+
   },
 
   async down (queryInterface, Sequelize) {

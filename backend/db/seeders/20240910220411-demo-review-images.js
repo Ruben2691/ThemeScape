@@ -26,7 +26,11 @@ module.exports = {
         url: "https://placehold.co/600x400/png",
       },
     ];
-    await ReviewImages.bulkCreate(reviewImageSeed, {validate: true});
+try {
+  await ReviewImages.bulkCreate(reviewImageSeed, {validate : true});
+} catch (error) {
+  console.error(error)
+}
 
   },
 

@@ -13,32 +13,35 @@ module.exports = {
   async up (queryInterface, Sequelize) {
    const userSeed = [
      {
-       email: "demo@user.io",
-       userName: "Demo-lition",
        firstName: "Demo",
        lastName: "lition",
+       email: "demo@user.io",
+       username: "Demo-lition",
        hashedPassword: bcrypt.hashSync("password"),
      },
      {
-       email: "user1@user.io",
-       userName: "FakeUser1",
        firstName: "Fake",
        lastName: "User",
+       email: "user1@user.io",
+       username: "FakeUser1",
        hashedPassword: bcrypt.hashSync("password2"),
      },
      {
-       email: "user2@user.io",
-       userName: "FakeUser2",
-       firstName: "Faker",
-       lastName: "User",
-       hashedPassword: bcrypt.hashSync("password3"),
+      firstName: "Faker",
+      lastName: "User",
+      email: "user2@user.io",
+      username: "FakeUser2",
+      hashedPassword: bcrypt.hashSync("password3"),
      },
    ];
-   await Users.bulkCreate(userSeed);
+   try{await Users.bulkCreate(userSeed,{validate:true});
+   }catch(err){
+    console.error(err);
+   }
+
   },
 
   async down (queryInterface, Sequelize) {
-    options.tableName = 'Users';
     await queryInterface.bulkDelete('Users', null, {});
   }
 };

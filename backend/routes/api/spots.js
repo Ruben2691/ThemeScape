@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
 });
 
 //details of a spot from an id
-router.get('/spots/:spotId', async (req, res) => {
+router.get(' /:spotId', async (req, res) => {
   const { spotId } = req.params;
 
   try {
@@ -40,7 +40,7 @@ router.get('/spots/:spotId', async (req, res) => {
 });
 
 // Get all spots owned by the current user
-router.get('/spots/current', requireAuth, async (req, res) => {
+router.get(' /current', requireAuth, async (req, res) => {
   try {
     const spots = await Spots.findAll({
       where: { ownerId: req.user.id }
@@ -77,7 +77,7 @@ router.post('/', requireAuth, async (req, res) => {
   });
 
   // Get Spot by ID and details (Owner, SpotImages, Reviews)
-router.get('/spots/:id', async (req, res) => {
+router.get(' /:id', async (req, res) => {
   const spotId = req.params.id;
 
   try {
@@ -143,7 +143,7 @@ router.get('/spots/:id', async (req, res) => {
 
 
 // PUT /spots/:id - Update a spot
-router.put('/spots/:id', requireAuth, async (req, res) => {
+router.put('/:id', requireAuth, async (req, res) => {
   const spotId = req.params.id;
   const userId = req.user.id; // `req.user.id` is set after auth
   const { address, city, state, country, lat, lng, name, description, price } = req.body;
@@ -216,7 +216,7 @@ router.put('/spots/:id', requireAuth, async (req, res) => {
 });
 
 // DELETE /spots/:id - Delete a spot
-router.delete('/spots/:id', requireAuth, async (req, res) => {
+router.delete('/:id', requireAuth, async (req, res) => {
   const spotId = req.params.id;
   const userId = req.user.id;
 
@@ -244,7 +244,7 @@ router.delete('/spots/:id', requireAuth, async (req, res) => {
   }
 });
 //query parameter validator
-router.get( '/spots',
+router.get( '/',
   [
       check('page').optional().isInt({ min: 1 }).withMessage('Page must be an integer greater than or equal to 1'),
       check('size').optional().isInt({ min: 1, max: 20 }).withMessage('Size must be an integer between 1 and 20'),
@@ -262,7 +262,7 @@ router.get( '/spots',
       }
 
       // GET /api/spots - Return spots filtered by query parameters
-  router.get('/spots', async (req, res) => {
+  router.get('/', async (req, res) => {
     try {
         let { page = 1, size = 20, minLat, maxLat, minLng, maxLng, minPrice, maxPrice } = req.query;
 

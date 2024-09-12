@@ -15,13 +15,13 @@ module.exports = {
    const spotImageSeed = [
      {
        spotId: 1,
-       preview: true,
        url: "https://placehold.co/600x400/png",
+       preview: true,
      },
      {
        spotId: 2,
-       preview: true,
        url: "https://placehold.co/600x400/png",
+       preview: true,
      },
      {
        spotId: 3,
@@ -33,11 +33,17 @@ module.exports = {
      },
      {
        spotId: 5,
-       preview: true,
        url: "https://placehold.co/600x400/png",
+       preview: true,
      },
    ];
-   await SpotImages.bulkCreate(spotImageSeed, {validate: true});
+
+    try {
+      await SpotImages.bulkCreate(spotImageSeed, {validate : true});
+    } catch (error) {
+      console.error(error)
+    }
+
   },
 
   async down (queryInterface, Sequelize) {

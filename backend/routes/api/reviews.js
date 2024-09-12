@@ -1,5 +1,5 @@
 const express = require("express");
-const { Booking, Spots } = require("../../db/models");
+const { Booking, Spots, Reviews } = require("../../db/models");
 const router = express.Router();
 const { requireAuth } = require("../../utils/auth");
 const { handleValidationErrors } = require("../../utils/validation");
@@ -32,7 +32,7 @@ const validateBooking = [
 ];
 
 // POST /spots/:id/reviews - Create a new review for a spot
-router.post('/spots/:id/reviews', requireAuth, async (req, res) => {
+router.post('/:id/reviews', requireAuth, async (req, res) => {
     const userId = req.user.id;
     const spotId = req.params.id;
     const { review, stars } = req.body;
@@ -56,7 +56,7 @@ router.post('/spots/:id/reviews', requireAuth, async (req, res) => {
       }
 
       // Check if user has already made a review for this spot
-      const existingReview = await Review.findOne({
+      const existingReview = await Reviews.findOne({
         where: { userId, spotId },
       });
       if (existingReview) {
@@ -101,7 +101,7 @@ router.put("/:bookingId", requireAuth, validateBooking, async (req, res) => {
 
   try {
     // Find the booking by ID
-    const booking = await Booking.findByPk(bookingId);
+    const booking = await Bookings.findByPk(bookingId);
 
     // If booking is not found, return 404
     if (!booking) {
@@ -220,7 +220,7 @@ router.get('/reviews/current', requireAuth, async (req, res) => {
 
 
   // GET /spots/:spotId/reviews - Get all reviews for a spot
-  router.get('/spots/:spotId/reviews', async (req, res) => {
+  router.get('/:spotId/reviews', async (req, res) => {
     const { spotId } = req.params;
 
     try {
@@ -280,7 +280,7 @@ router.get('/reviews/current', requireAuth, async (req, res) => {
   });
 
   // PUT /reviews/:reviewId - Update a review
-  router.put('/reviews/:reviewId', requireAuth, async (req, res) => {
+  router.put('/:reviewId', requireAuth, async (req, res) => {
     const { reviewId } = req.params;
     const { review, stars } = req.body;
     const { user } = req;

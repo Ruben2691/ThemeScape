@@ -187,7 +187,7 @@ router.put("/:bookingId", requireAuth, validateBooking, async (req, res) => {
 });
 
 // delete a booking
-router.delete("/bookings/:bookingId", requireAuth, async (req, res) => {
+router.delete("/:bookingId", requireAuth, async (req, res) => {
   const bookingId = req.params.bookingId; // Corrected from req.params.id
   const currentUserId = req.user.id; // Assuming you have current user info in req.user
 
