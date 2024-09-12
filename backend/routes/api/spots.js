@@ -287,7 +287,7 @@ router.get( '/',
         if (maxPrice) filters.price = { ...filters.price, [Op.lte]: parseFloat(maxPrice) };
 
         // Fetch spots from the database with applied filters
-        const spots = await Spot.findAll({
+        const spots = await Spots.findAll({
             where: filters,
             limit: size,
             offset: (page - 1) * size,

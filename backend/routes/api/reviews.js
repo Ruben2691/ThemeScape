@@ -1,5 +1,5 @@
 const express = require("express");
-const { Booking, Spots, Reviews } = require("../../db/models");
+const { Bookings, Spots, Reviews } = require("../../db/models");
 const router = express.Router();
 const { requireAuth } = require("../../utils/auth");
 const { handleValidationErrors } = require("../../utils/validation");
@@ -186,8 +186,8 @@ router.get('/reviews/current', requireAuth, async (req, res) => {
             updatedAt: review.updatedAt,
             User: {
               id: review.Users.id,
-              firstName: review.User.firstName,
-              lastName: review.User.lastName,
+              firstName: review.Users.firstName,
+              lastName: review.Users.lastName,
             },
             Spot: {
               id: review.Spots.id,
