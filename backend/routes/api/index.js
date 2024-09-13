@@ -16,9 +16,9 @@ const { restoreUser } = require("../../utils/auth.js");
   router.use('/session', sessionRouter);
   router.use('/users', usersRouter);
   router.use('/spots' , spotsRouter);
-  router.use('/spotsImages' , spotsImagesRouter);
+  router.use('/spot-images' , spotsImagesRouter);
   router.use('/reviews' , reviewsRouter);
-  router.use('/reviewsImages' , reviewsImagesRouter);
+  router.use('/review-images' , reviewsImagesRouter);
   router.use('/bookings' , bookingsRouter);
 
 router.post('/test', (req, res) => {

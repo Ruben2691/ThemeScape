@@ -61,7 +61,7 @@ router.put("/:bookingId", requireAuth, validateBooking, async (req, res) => {
     }
 
     // Get all bookings for the same spot
-    router.put( "/:bookingId", requireAuth, validateBooking,
+    router.put("/:bookingId", requireAuth, validateBooking,
       async (req, res) => {
         const bookingId = req.params.bookingId;
         const { startDate, endDate } = req.body;
@@ -234,90 +234,6 @@ router.delete("/:bookingId", requireAuth, async (req, res) => {
   }
 });
 
-// get all bookings for a spot based on spot id
-router.get("/spots/:spotId/bookings", requireAuth, async (req, res) => {
-  const spotId = req.params.spotId;
-  const currentUserId = req.user.id; //req.user contains the authenticated user info
-
-  try {
-    // Find the spot first to check ownership
-    const spot = await Spots.findByPk(spotId);
-
-    // If the spot is not found, return a 404 error
-    if (!spot) {
-      return res.status(404).json({ message: "Spot couldn't be found" });
-    }
-
-    // Determine if the current user is the owner of the spot
-    const isOwner = spot.ownerId === currentUserId;
-
-    // Set up the include for the Booking model
-    let include = [
-      {
-        model: Bookings,
-        attributes: ["spotId","startDate", "endDate"],
-      },
-    ];
-
-    // If the user is the owner, add the User model to the include
-    if (isOwner) {
-      include = [
-        {
-          model: Bookings,
-          include: [
-            { model: Users, attributes: ["id", "firstName", "lastName"] },
-          ],
-          attributes: [
-            "id",
-            "spotId",
-            "userId",
-            "startDate",
-            "endDate",
-            "createdAt",
-            "updatedAt",
-          ],
-        },
-      ];
-    }
-
-    // Now, find the spot again with the proper include (based on ownership)
-    const spotWithBookings = await Spots.findByPk(spotId, { include });
-
-    // Map through the bookings and customize the response based on ownership
-    const bookings = spotWithBookings.Bookings.map((booking) => {
-      if (isOwner) {
-        // Detailed booking info with user data for the owner
-        return {
-          User: {
-            id: booking.Users.id,
-            firstName: booking.Users.firstName,
-            lastName: booking.Users.lastName,
-          },
-          id: booking.id,
-          spotId: booking.spotId,
-          userId: booking.userId,
-          startDate: booking.startDate,
-          endDate: booking.endDate,
-          createdAt: booking.createdAt,
-          updatedAt: booking.updatedAt,
-        };
-      } else {
-        // Basic booking info for non-owners
-        return {
-          spotId: booking.spotId,
-          startDate: booking.startDate,
-          endDate: booking.endDate,
-        };
-      }
-    });
-
-    // Return the bookings in the correct format
-    return res.status(200).json({ Bookings: bookings });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
-  }
-});
 
 // gat all of the current user's bookings
 router.get("/current", requireAuth, async (req, res) => {

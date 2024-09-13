@@ -38,7 +38,7 @@ router.delete("/:imageId", requireAuth, async (req, res) => {
 const MAX_REVIEW_IMAGES = 10;
 
 // POST /reviews/:id/images - Create a new image for a review
-router.post('/reviews/:id/images', requireAuth, async (req, res) => {
+router.post('/:id/images', requireAuth, async (req, res) => {
   const userId = req.user.id; // Assuming `req.user.id` is set after authentication
   const reviewId = req.params.id;
   const { url } = req.body;
@@ -97,70 +97,6 @@ router.post('/reviews/:id/images', requireAuth, async (req, res) => {
       statusCode: 500,
     });
   }
-});
-
-// constant for the max num of images per review
-const maxReviewImages = 10;
-
-// POST /reviews/:id/images - Create new image for a review
-router.post('/reviews/:id/images', requireAuth, async (req, res) => {
-  const userId = req.user.id;
-  const reviewId = req.params.id;
-  const { url } = req.body;
-
-  if (!url || typeof url !== 'string') {
-    return res.status(400).json({
-      message: 'Validation error: URL is required.',
-      statusCode: 400,
-    });
-  }
-
-  try {
-    // if review exists?
-    const review = await Reviews.findByPk(reviewId);
-    if (!review) {
-      return res.status(404).json({
-        message: 'Review not found',
-        statusCode: 404,
-      });
-    }
-
-    // check if the auth user is the owner of review
-    if (review.userId !== userId) {
-      return res.status(403).json({
-        message: 'You are not authorized to add an image to this review',
-        statusCode: 403,
-      });
-    }
-
-    // check if the max num of images for this review has been met
-    const reviewImagesCount = await ReviewImages.count({
-      where: { reviewId },
-    });
-    if (reviewImagesCount >= maxReviewImages) {
-      return res.status(403).json({
-        message: `Maximum number of images (${maxReviewImages}) for this review has been reached`,
-        statusCode: 403,
-      });
-    }
-// Create new image
-const newImage = await ReviewImages.create({
-    reviewId,
-    url,
-  });
-
-  // Return the data
-  return res.status(201).json({
-    id: newImage.id,
-    url: newImage.url,
-  });
-} catch (error) {
-  console.error('Error creating review image:', error);
-  res.status(500).json({
-    message: 'Internal server error',
-    statusCode: 500,
-  });
-}
 });
 
 module.exports = router;

@@ -1,5 +1,5 @@
 const express = require("express");
-const { Bookings, Spots, Reviews } = require("../../db/models");
+const { Bookings, Spots, Reviews, ReviewImages } = require("../../db/models");
 const router = express.Router();
 const { requireAuth } = require("../../utils/auth");
 const { handleValidationErrors } = require("../../utils/validation");
@@ -31,67 +31,6 @@ const validateBooking = [
   handleValidationErrors,
 ];
 
-// POST /spots/:id/reviews - Create a new review for a spot
-router.post('/:id/reviews', requireAuth, async (req, res) => {
-    const userId = req.user.id;
-    const spotId = req.params.id;
-    const { review, stars } = req.body;
-
-    // Validate req body
-    if (!review || typeof review !== 'string' || !stars || typeof stars !== 'number' || stars < 1 || stars > 5) {
-      return res.status(400).json({
-        message: 'Validation error: Review and stars are required. Stars must be between 1 and 5.',
-        statusCode: 400,
-      });
-    }
-
-    try {
-      // Check if spot exists
-      const spot = await Spots.findByPk(spotId);
-      if (!spot) {
-        return res.status(404).json({
-          message: 'Spot not found',
-          statusCode: 404,
-        });
-      }
-
-      // Check if user has already made a review for this spot
-      const existingReview = await Reviews.findOne({
-        where: { userId, spotId },
-      });
-      if (existingReview) {
-        return res.status(403).json({
-          message: 'User already has a review for this spot',
-          statusCode: 403,
-        });
-      }
-
-      // Create new review
-      const newReview = await Reviews.create({
-        userId,
-        spotId,
-        review,
-        stars,
-      });
-
-      // Return the new review data
-      return res.status(201).json({
-        id: newReview.id,
-        userId: newReview.userId,
-        spotId: newReview.spotId,
-        review: newReview.review,
-        stars: newReview.stars,
-        createdAt: newReview.createdAt,
-        updatedAt: newReview.updatedAt,
-      });
-    } catch (error) {
-      console.error('Error creating review:', error);
-      res.status(500).json({
-        message: 'Internal server error',
-        statusCode: 500,
-      });
-    }
-  });
 
 //edit a booking
 router.put("/:bookingId", requireAuth, validateBooking, async (req, res) => {
@@ -129,7 +68,7 @@ router.put("/:bookingId", requireAuth, validateBooking, async (req, res) => {
 
 
     // GET /reviews/current - Get all reviews by the current authenticated user
-router.get('/reviews/current', requireAuth, async (req, res) => {
+router.get('/current', requireAuth, async (req, res) => {
     const userId = req.user.id;
 
     try {
@@ -219,65 +158,7 @@ router.get('/reviews/current', requireAuth, async (req, res) => {
   });
 
 
-  // GET /spots/:spotId/reviews - Get all reviews for a spot
-  router.get('/:spotId/reviews', async (req, res) => {
-    const { spotId } = req.params;
 
-    try {
-      // if the spot exists?
-      const spot = await Spots.findByPk(spotId);
-
-      if (!spot) {
-        return res.status(404).json({
-          message: "Spot couldn't be found",
-          statusCode: 404,
-        });
-      }
-
-      // Find all reviews for the given spotId
-      const spotReviews = await Reviews.findAll({
-        where: { spotId },
-        include: [
-          {
-            model: Users,
-            attributes: ['id', 'firstName', 'lastName'],
-          },
-          {
-            model: ReviewImages,
-            attributes: ['id', 'url'],
-          },
-        ],
-      });
-
-
-      return res.status(200).json({
-        Reviews: spotReviews.map(review => ({
-          id: review.id,
-          userId: review.userId,
-          spotId: review.spotId,
-          review: review.review,
-          stars: review.stars,
-          createdAt: review.createdAt,
-          updatedAt: review.updatedAt,
-          User: {
-            id: review.Users.id,
-            firstName: review.Users.firstName,
-            lastName: review.Users.lastName,
-          },
-          ReviewImages: review.ReviewImages.map(image => ({
-            id: image.id,
-            url: image.url,
-          })),
-        })),
-      });
-    } catch (error) {
-      console.error('Error fetching reviews for the spot:', error);
-      return res.status(500).json({
-        message: 'Internal server error',
-        statusCode: 500,
-      });
-    }
-  });
 
   // PUT /reviews/:reviewId - Update a review
   router.put('/:reviewId', requireAuth, async (req, res) => {
@@ -340,6 +221,101 @@ router.get('/reviews/current', requireAuth, async (req, res) => {
       });
     }
   });
+
+
+
+// constant for the max num of images per review
+const maxReviewImages = 10;
+
+// POST /reviews/:id/images - Create new image for a review
+router.post('/:id/images', requireAuth, async (req, res) => {
+  const userId = req.user.id;
+  const reviewId = req.params.id;
+  const { url } = req.body;
+
+  if (!url || typeof url !== 'string') {
+    return res.status(400).json({
+      message: 'Validation error: URL is required.',
+      statusCode: 400,
+    });
+  }
+
+  try {
+    // if review exists?
+    const review = await Reviews.findByPk(reviewId);
+    if (!review) {
+      return res.status(404).json({
+        message: 'Review not found',
+        statusCode: 404,
+      });
+    }
+
+    // check if the auth user is the owner of review
+    if (review.userId !== userId) {
+      return res.status(403).json({
+        message: 'You are not authorized to add an image to this review',
+        statusCode: 403,
+      });
+    }
+
+    // check if the max num of images for this review has been met
+    const reviewImagesCount = await ReviewImages.count({
+      where: { reviewId },
+    });
+    if (reviewImagesCount >= maxReviewImages) {
+      return res.status(403).json({
+        message: `Maximum number of images (${maxReviewImages}) for this review has been reached`,
+        statusCode: 403,
+      });
+    }
+// Create new image
+const newImage = await ReviewImages.create({
+    reviewId,
+    url,
+  });
+
+  // Return the data
+  return res.status(201).json({
+    id: newImage.id,
+    url: newImage.url,
+  });
+} catch (error) {
+  console.error('Error creating review image:', error);
+  res.status(500).json({
+    message: 'Internal server error',
+    statusCode: 500,
+  });
+}
+});
+
+//delete a review
+router.delete("/:reviewId", requireAuth, async (req, res) => {
+  const reviewId = req.params.reviewId;
+  const currentUserId = req.user.id;
+
+  try {
+    // Find the review by ID
+    const review = await Reviews.findByPk(reviewId);
+
+    // If the review is not found, return 404
+    if (!review) {
+      return res.status(404).json({ message: "Review couldn't be found" });
+    }
+
+    // Check if the current user is the owner of the review
+    if (review.userId !== currentUserId) {
+      return res.status(403).json({ message: "Forbidden - You are not authorized to delete this review" });
+    }
+
+    // Delete the review
+    await review.destroy();
+
+    return res.status(200).json({ message: "Successfully deleted" });
+  } catch (error) {
+    console.error("Error deleting review:", error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+});
 
 
 module.exports = router;
