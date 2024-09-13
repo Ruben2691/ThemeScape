@@ -1,35 +1,7 @@
 const express = require("express");
-const { Bookings, Spots, Reviews, ReviewImages } = require("../../db/models");
+const {  Spots, Reviews, ReviewImages } = require("../../db/models");
 const router = express.Router();
 const { requireAuth } = require("../../utils/auth");
-const { handleValidationErrors } = require("../../utils/validation");
-const { check } = require("express-validator");
-
-const validateBooking = [
-  // Check if startDate exists
-  check("startDate")
-    .exists({ checkFalsy: true })
-    .withMessage("Start date is required"),
-
-  // Check if endDate exists
-  check("endDate")
-    .exists({ checkFalsy: true })
-    .withMessage("End date is required"),
-
-  // Custom validation to check if startDate is before endDate
-  check("startDate").custom((value, { req }) => {
-    const startDate = new Date(value);
-    const endDate = new Date(req.body.endDate);
-
-    if (startDate >= endDate) {
-      throw new Error("Start date must be before end date");
-    }
-
-    // If the validation passes, return true
-    return true;
-  }),
-  handleValidationErrors,
-];
 
 
     // GET /reviews/current - Get all reviews by the current authenticated user
