@@ -76,69 +76,69 @@ router.get('/:spotId', async (req, res) => {
 });
 
   // Get Spot by ID and details (Owner, SpotImages, Reviews)
-router.get('/:id', async (req, res) => {
-  const spotId = req.params.id;
+// router.get('/:id', async (req, res) => {
+//   const spotId = req.params.id;
 
-  try {
-    // Find spot by ID
-    const spot = await Spots.findByPk(spotId, {
-      include: [
-        // the owner (User) data
-        {
-          model: 'Users',
-          as: 'Owner',
-          attributes: ['id', 'firstName', 'lastName'],
-        },
-        // spot images
-        {
-          model: 'SpotImages',
-          attributes: ['id', 'url', 'preview'],
-        },
-      ],
-    });
+//   try {
+//     // Find spot by ID
+//     const spot = await Spots.findByPk(spotId, {
+//       include: [
+//         // the owner (User) data
+//         {
+//           model: 'Users',
+//           as: 'Owner',
+//           attributes: ['id', 'firstName', 'lastName'],
+//         },
+//         // spot images
+//         {
+//           model: 'SpotImages',
+//           attributes: ['id', 'url', 'preview'],
+//         },
+//       ],
+//     });
 
-    if (!spot) {
-      return res.status(404).json({ message: 'Spot not found', statusCode: 404 });
-    }
+//     if (!spot) {
+//       return res.status(404).json({ message: 'Spot not found', statusCode: 404 });
+//     }
 
-    // Get # of reviews and avg rating
-    const reviews = await Reviews.findAll({
-      where: { spotId: spot.id },
-      attributes: ['stars'],
-    });
+//     // Get # of reviews and avg rating
+//     const reviews = await Reviews.findAll({
+//       where: { spotId: spot.id },
+//       attributes: ['stars'],
+//     });
 
-    const numReviews = reviews.length;
-    const avgStarRating = reviews.length
-      ? reviews.reduce((sum, review) => sum + review.stars, 0) / numReviews
-      : 0;
+//     const numReviews = reviews.length;
+//     const avgStarRating = reviews.length
+//       ? reviews.reduce((sum, review) => sum + review.stars, 0) / numReviews
+//       : 0;
 
-    // response object
-    const spotDetails = {
-      id: spot.id,
-      ownerId: spot.ownerId,
-      address: spot.address,
-      city: spot.city,
-      state: spot.state,
-      country: spot.country,
-      lat: spot.lat,
-      lng: spot.lng,
-      name: spot.name,
-      description: spot.description,
-      price: spot.price,
-      createdAt: spot.createdAt,
-      updatedAt: spot.updatedAt,
-      numReviews: numReviews,
-      avgStarRating: avgStarRating,
-      SpotImages: spot.SpotImages,
-      Owner: spot.Owner,
-    };
+//     // response object
+//     const spotDetails = {
+//       id: spot.id,
+//       ownerId: spot.ownerId,
+//       address: spot.address,
+//       city: spot.city,
+//       state: spot.state,
+//       country: spot.country,
+//       lat: spot.lat,
+//       lng: spot.lng,
+//       name: spot.name,
+//       description: spot.description,
+//       price: spot.price,
+//       createdAt: spot.createdAt,
+//       updatedAt: spot.updatedAt,
+//       numReviews: numReviews,
+//       avgStarRating: avgStarRating,
+//       SpotImages: spot.SpotImages,
+//       Owner: spot.Owner,
+//     };
 
-    res.json(spotDetails);
-  } catch (error) {
-    console.error('Error fetching spot details:', error);
-    res.status(500).json({ message: 'Internal server error', statusCode: 500 });
-  }
-});
+//     res.json(spotDetails);
+//   } catch (error) {
+//     console.error('Error fetching spot details:', error);
+//     res.status(500).json({ message: 'Internal server error', statusCode: 500 });
+//   }
+// });
 
 // get all bookings for a spot based on spot id
 router.get("/:spotId/bookings", requireAuth, async (req, res) => {
