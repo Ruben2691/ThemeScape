@@ -31,6 +31,74 @@ const validateBooking = [
   handleValidationErrors,
 ];
 
+
+
+
+// gat all of the current user's bookings
+router.get("/current", requireAuth, async (req, res) => {
+  const currentUserId = req.user.id;
+  try {
+    const bookings = await Bookings.findAll({
+      where: { userId: currentUserId },
+      include: {
+        model: Spots, // Include the Spot model to get spot details
+        attributes: [
+          "id",
+          "ownerId",
+          "address",
+          "city",
+          "state",
+          "country",
+          "lat",
+          "lng",
+          "name",
+          "price",
+          "previewImage",
+        ],
+      },
+    });
+    return res.status(200).json({ Bookings: bookings });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Internal server error" });
+  }
+})
+
+//edit a booking
+//   router.put("/:bookingId", requireAuth, validateBooking, async (req, res) => {
+//   const bookingId = req.params.bookingId;
+//   const { startDate, endDate } = req.body;
+//   const userId = req.user.id; // userId from authentication
+
+//   try {
+//     // Find the booking by ID
+//     const booking = await Bookings.findByPk(bookingId);
+
+//     // If booking is not found, return 404
+//     if (!booking) {
+//       return res.status(404).json({ message: "Booking couldn't be found" });
+//     }
+
+//     // Check if the current user owns this booking
+//     if (booking.userId !== userId) {
+//       return res
+//         .status(403)
+//         .json({ message: "You do not have permission to edit this booking" });
+//     }
+
+//     if (new Date(endDate) <= new Date(startDate)) {
+//       return res.status(400).json({
+//         message: "Bad Request",
+//         errors: { endDate: "End date cannot be on or before startDate" },
+//       });
+//     }
+// } catch (error) {
+//     console.error(error);
+//     return res.status(500).json({ message: "Internal server error" });
+//     }
+//     });
+
+
 //edit a booking
 router.put("/:bookingId", requireAuth, validateBooking, async (req, res) => {
   const bookingId = req.params.bookingId;
@@ -233,37 +301,6 @@ router.delete("/:bookingId", requireAuth, async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 });
-
-
-// gat all of the current user's bookings
-router.get("/current", requireAuth, async (req, res) => {
-  const currentUserId = req.user.id;
-  try {
-    const bookings = await Bookings.findAll({
-      where: { userId: currentUserId },
-      include: {
-        model: Spots, // Include the Spot model to get spot details
-        attributes: [
-          "id",
-          "ownerId",
-          "address",
-          "city",
-          "state",
-          "country",
-          "lat",
-          "lng",
-          "name",
-          "price",
-          "previewImage",
-        ],
-      },
-    });
-    return res.status(200).json({ Bookings: bookings });
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal server error" });
-  }
-})
 
 
 module.exports = router;
