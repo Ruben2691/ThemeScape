@@ -6,15 +6,15 @@ const { check, validationResult } = require('express-validator');
 
 
 //GET Spots
-// router.get('/', async (req, res) => {
-//   try {
-//     const spots = await Spots.findAll();
-//     res.json({ Spots: spots });
-//   } catch (err) {
-//     console.error('Error retrieving spots:', err);
-//     res.status(500).json({ message: "Server error", errors: err.errors });
-//   }
-// });
+router.get('/', async (req, res) => {
+  try {
+    const spots = await Spots.findAll();
+    res.json({ Spots: spots });
+  } catch (err) {
+    console.error('Error retrieving spots:', err);
+    res.status(500).json({ message: "Server error", errors: err.errors });
+  }
+});
 
 //GET all Spots
 router.get('/', async (req,res, err) => {
