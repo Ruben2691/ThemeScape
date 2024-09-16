@@ -33,7 +33,7 @@ router.get('/', async (req,res, err) => {
   let spotsList = [];
 
   // Push each spot into spotsList
-  spots.forEach((spot) => {
+  Spots.forEach((spot) => {
       spotsList.push(spot.toJSON());
   });
 
