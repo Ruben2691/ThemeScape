@@ -94,7 +94,8 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references:{
-        model: "Users", key: "id" , as: "Owner"
+        model: "Users", key: "id" , as: "Owner",
+        tableName: "Users"
       }
     },
     address: {
@@ -146,6 +147,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'Spots',
+    tableName: 'Spots'
   });
 
   return Spots;

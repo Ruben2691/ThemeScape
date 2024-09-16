@@ -50,7 +50,8 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
       references:{
-        model: "Reviews", key: "id"
+        model: "Reviews", key: "id",
+        tableName : "Reviews"
       }
     },
     url: {
@@ -70,6 +71,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {
     sequelize,
     modelName: 'ReviewImages',
+    tableName: 'ReviewImages'
   });
 
   return ReviewImages;
