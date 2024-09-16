@@ -81,7 +81,7 @@ module.exports = (sequelize, DataTypes) => {
   class Spots extends Model {
     static associate(models) {
       // Spot belongs to a user (owner)
-      Spots.belongsTo(models.Users, { foreignKey: 'ownerId', onDelete: 'CASCADE' });
+      Spots.belongsTo(models.Users, { foreignKey: 'ownerId',  onDelete: 'CASCADE' });
       // Spot can have many reviews, bookings, and spot images
       Spots.hasMany(models.Reviews, { foreignKey: 'spotId', onDelete: 'CASCADE' });
       Spots.hasMany(models.Bookings, { foreignKey: 'spotId', onDelete: 'CASCADE' });
@@ -92,7 +92,10 @@ module.exports = (sequelize, DataTypes) => {
   Spots.init({
     ownerId: {
       type: DataTypes.INTEGER,
-      allowNull: false
+      allowNull: false,
+      references:{
+        model: "Users", key: "id" , as: "Owner"
+      }
     },
     address: {
       type: DataTypes.STRING,
